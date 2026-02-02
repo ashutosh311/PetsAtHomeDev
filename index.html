@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pets@Home</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            text-align: center;
+        }
+        .header-links {
+            text-align: right;
+            padding: 10px 20px;
+        }
+        .header-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #5f6368;
+            font-size: 14px;
+        }
+        .logo {
+            margin-top: 100px;
+        }
+        .logo h1 {
+            font-size: 80px;
+            font-weight: normal;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            width: 60%;
+            max-width: 600px;
+            padding: 12px 28px;
+            border: 1px solid #dadce0;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+            box-shadow: none;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 1px;
+            background-color: #cad2da;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f2f2f2;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #5f6368;
+        }
+        footer .footer-links {
+            display: flex;
+            justify-content: space-between;
+            max-width: 900px;
+            margin: auto;
+        }
+        footer .footer-links a {
+            margin: 0 15px;
+            color: #5f6368;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Links -->
+    <div class="header-links">
+        <a href="#">My Account</a>
+        <a href="#">My Orders</a>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo">
+        <h1>
+            <span style="color: #4285F4;">P</span>
+            <span style="color: #EA4335;">e</span>
+            <span style="color: #FBBC05;">t</span>
+            <span style="color: #4285F4;">s</span>
+            <span style="color: #34A853;">@</span>
+            <span style="color: #EA4335;">H</span>
+            <span style="color: #4285F4;">o</span>
+            <span style="color: #EA4335;">m</span>
+            <span style="color: #4285F4;">e</span>
+        </h1>
+    </div>
+
+    <!-- Search Box -->
+    <input type="text" class="search-box" placeholder="Search for food, treats, toys & more..." />
+
+    <!-- Buttons -->
+    <div class="buttons">
+        <button>Pets Search</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <div>
+                <a href="#">About</a>
+                <a href="#">Advertising</a>
+                <a href="#">Business</a>
+                <a href="#">How Search Works</a>
+            </div>
+            <div>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Settings</a>
+            </div>
+        </div>
+    </footer>
+<script type='text/javascript'>
+    async function initEmbeddedMessaging() {
+        try {
+            // Wait for the authToken to be fetched
+            const authToken = await getAuthToken();
+
+            if (!authToken) {
+                console.error('AnuragTesting4 authToken value not found.');
+                return;
+            }
+
+            // Ensure embeddedservice_bootstrap is defined before using it
+            if (typeof embeddedservice_bootstrap === 'undefined') {
+                console.error('AnuragTesting4 embeddedservice_bootstrap is not defined.');
+                return;
+            }
+
+            embeddedservice_bootstrap.settings.language = 'en_US';
+            console.error('AnuragTesting4 embeddedservice_bootstrap:', embeddedservice_bootstrap);
+            console.error('AnuragTesting4 embeddedservice_bootstrap.utilAPI:', embeddedservice_bootstrap.utilAPI);
+            //console.error('AnuragTesting embeddedservice_bootstrap.utilAPI.setSessionContext:', embeddedservice_bootstrap.utilAPI.setSessionContext);
+            // Check if utilAPI and setSessionContext are available
+            if (window.embeddedservice_bootstrap.utilAPI && window.embeddedservice_bootstrap.utilAPI.setSessionContext) {
+            window.embeddedservice_bootstrap.utilAPI.setSessionContext(                    
+        {
+                        name: "B2CAuthorizationToken",
+                        value: {
+                            valueType: "String",
+                            value: authToken
+                        }
+                    });
+            } else {
+                console.error('AnuragTesting4 utilAPI or setSessionContext is not available on embeddedservice_bootstrap.');
+            }
+
+            embeddedservice_bootstrap.init(
+                '00D3M0000000bcP',
+                'AnuragGitHubMessingChannel',
+                'https://petsathome00001--preprod.sandbox.my.site.com/ESWAnuragGitHubMessingCha1767956038934',
+                {
+                    scrt2URL: 'https://petsathome00001--preprod.sandbox.my.salesforce-scrt.com'
+                }
+            );
+        } catch (err) {
+            console.error('AnuragTesting4 Error loading Embedded Messaging: ', err);
+        }
+    }
+
+    // Mock function to simulate fetching the authToken
+    async function getAuthToken() {
+        // Replace this with the actual logic to fetch the authToken
+        return "sampleAuthToken12345";
+    }
+
+    // Wait for the embeddedservice_bootstrap script to load before initializing
+    window.addEventListener('load', () => {
+        if (typeof embeddedservice_bootstrap !== 'undefined') {
+            initEmbeddedMessaging();
+        } else {
+            console.error('embeddedservice_bootstrap script did not load.');
+        }
+    });
+</script>
+<script type='text/javascript' src='https://petsathome00001--preprod.sandbox.my.site.com/ESWAnuragGitHubMessingCha1767956038934/assets/js/bootstrap.min.js'></script>
+</body>
+</html>
