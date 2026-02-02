@@ -138,22 +138,27 @@
             }
 
             embeddedservice_bootstrap.settings.language = 'en_US';
-            console.error('AnuragTesting4 embeddedservice_bootstrap:', embeddedservice_bootstrap);
-            console.error('AnuragTesting4 embeddedservice_bootstrap.utilAPI:', embeddedservice_bootstrap.utilAPI);
-            //console.error('AnuragTesting embeddedservice_bootstrap.utilAPI.setSessionContext:', embeddedservice_bootstrap.utilAPI.setSessionContext);
-            // Check if utilAPI and setSessionContext are available
-            if (window.embeddedservice_bootstrap.utilAPI && window.embeddedservice_bootstrap.utilAPI.setSessionContext) {
-            window.embeddedservice_bootstrap.utilAPI.setSessionContext(                    
-        {
-                        name: "B2CAuthorizationToken",
+            
+            // Set session context with auth token before initializing
+            // setSessionContext expects an ARRAY of context objects
+            embeddedservice_bootstrap.utilAPI.setSessionContext([
+                {
+                    name: "_AgentContext",
+                    value: {
+                        valueType: "StructuredValue",
                         value: {
-                            valueType: "String",
-                            value: authToken
+                            B2CAuthorizationToken: authToken,
+                            currentPage: window.location.href
                         }
-                    });
-            } else {
-                console.error('AnuragTesting4 utilAPI or setSessionContext is not available on embeddedservice_bootstrap.');
-            }
+                    }
+                }
+            ])
+            .then(() => {
+                console.log('Context set successfully with auth token');
+            })
+            .catch((error) => {
+                console.error('Error setting context:', error);
+            });
 
             embeddedservice_bootstrap.init(
                 '00D3M0000000bcP',
