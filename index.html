@@ -12,9 +12,28 @@
             background-color: #fff;
             text-align: center;
         }
+        #debug-console {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.9);
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 10000;
+            text-align: left;
+        }
+        #debug-console .error { color: #f00; }
+        #debug-console .success { color: #0f0; }
+        #debug-console .info { color: #0ff; }
         .header-links {
             text-align: right;
-            padding: 10px 30px;
+            padding: 10px 20px;
         }
         .header-links a {
             margin: 0 10px;
@@ -75,6 +94,9 @@
     </style>
 </head>
 <body>
+    <!-- Debug Console Overlay -->
+    <div id="debug-console"></div>
+    
     <!-- Header Links -->
     <div class="header-links">
         <a href="#">My Account</a>
@@ -121,45 +143,52 @@
         </div>
     </footer>
 <script type='text/javascript'>
+    // Debug logger to display on page
+    const debugConsole = document.getElementById('debug-console');
+    function debugLog(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.className = type;
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        debugConsole.appendChild(logEntry);
+        debugConsole.scrollTop = debugConsole.scrollHeight;
+        
+        // Also log to console
+        if (type === 'error') console.error(message);
+        else if (type === 'success') console.log(message);
+        else console.info(message);
+    }
+
     async function initEmbeddedMessaging() {
         try {
+            debugLog('Fetching auth token...', 'info');
             // Wait for the authToken to be fetched
             const authToken = await getAuthToken();
 
             if (!authToken) {
+                debugLog('Auth token not found!', 'error');
                 console.error('AnuragTesting4 authToken value not found.');
                 return;
             }
+            debugLog('Auth token received: ' + authToken, 'success');
 
             // Ensure embeddedservice_bootstrap is defined before using it
             if (typeof embeddedservice_bootstrap === 'undefined') {
+                debugLog('embeddedservice_bootstrap is undefined!', 'error');
                 console.error('AnuragTesting4 embeddedservice_bootstrap is not defined.');
                 return;
             }
+            debugLog('embeddedservice_bootstrap found', 'success');
 
             embeddedservice_bootstrap.settings.language = 'en_US';
             
-            // Set session context with auth token before initializing
-            // setSessionContext expects an ARRAY of context objects
-            embeddedservice_bootstrap.utilAPI.setSessionContext([
-                {
-                    name: "_AgentContext",
-                    value: {
-                        valueType: "StructuredValue",
-                        value: {
-                            B2CAuthorizationToken: authToken,
-                            currentPage: window.location.href
-                        }
-                    }
-                }
-            ])
-            .then(() => {
-                console.log('Context set successfully with auth token');
-            })
-            .catch((error) => {
-                console.error('Error setting context:', error);
-            });
-
+            debugLog('Starting Embedded Service initialization...', 'info');
+            console.log('Starting Embedded Service initialization...');
+            console.log('Auth token:', authToken);
+            
+            debugLog('Calling embeddedservice_bootstrap.init()...', 'info');
+            console.log('Calling embeddedservice_bootstrap.init()...');
+            
             embeddedservice_bootstrap.init(
                 '00D3M0000000bcP',
                 'AnuragGitHubMessingChannel',
@@ -168,7 +197,72 @@
                     scrt2URL: 'https://petsathome00001--preprod.sandbox.my.salesforce-scrt.com'
                 }
             );
+            debugLog('✅ Init called successfully', 'success');
+            debugLog('Waiting for widget to be ready...', 'info');
+            
+            // Wait for the widget to be ready, then set context
+            // Poll for utilAPI availability (it becomes available when ready)
+            const setContextWhenReady = setInterval(() => {
+                if (embeddedservice_bootstrap.utilAPI && embeddedservice_bootstrap.utilAPI.setSessionContext) {
+                    clearInterval(setContextWhenReady);
+                    
+                    debugLog('Widget ready, setting session context...', 'info');
+                    embeddedservice_bootstrap.utilAPI.setSessionContext([
+                        {
+                            name: "_AgentContext",
+                            value: {
+                                valueType: "StructuredValue",
+                                value: {
+                                    B2CAuthorizationToken: authToken,
+                                    currentPage: window.location.href
+                                }
+                            }
+                        }
+                    ])
+                    .then(() => {
+                        debugLog('✅ Context set successfully with auth token', 'success');
+                        console.log('✅ Context set successfully with auth token');
+                    })
+                    .catch((error) => {
+                        debugLog('❌ Error setting context: ' + error.message, 'error');
+                        console.error('❌ Error setting context:', error);
+                    });
+                }
+            }, 500); // Check every 500ms
+            
+            // Timeout after 10 seconds
+            setTimeout(() => {
+                clearInterval(setContextWhenReady);
+            }, 10000);
+            
+            embeddedservice_bootstrap.init(
+                '00D3M0000000bcP',
+                'AnuragGitHubMessingChannel',
+                'https://petsathome00001--preprod.sandbox.my.site.com/ESWashutoshGithubChannelf1770049934495',
+                {
+                    scrt2URL: 'https://petsathome00001--preprod.sandbox.my.salesforce-scrt.com'
+                }
+            );
+            debugLog('✅ Init called successfully', 'success');
+            debugLog('Waiting for widget to render...', 'info');
+            
+            // Check if widget appears after a delay
+            setTimeout(() => {
+                const widget = document.querySelector('.embeddedMessagingFrame, .embeddedMessagingConversationButton, [class*="embedded"], iframe[title*="chat"], iframe[title*="messaging"]');
+                if (widget) {
+                    debugLog('✅ Widget found in DOM!', 'success');
+                } else {
+                    debugLog('⚠️ Widget not found after 5 seconds', 'error');
+                    debugLog('Possible issues:', 'info');
+                    debugLog('1. Channel "AnuragGitHubMessingChannel" not active', 'info');
+                    debugLog('2. Deployment ID incorrect', 'info');
+                    debugLog('3. Org ID "00D3M0000000bcP" mismatch', 'info');
+                    debugLog('4. Check Salesforce deployment settings', 'info');
+                }
+            }, 5000);
+            console.log('✅ Init called successfully');
         } catch (err) {
+            debugLog('❌ ERROR: ' + err.message, 'error');
             console.error('AnuragTesting4 Error loading Embedded Messaging: ', err);
         }
     }
@@ -181,13 +275,21 @@
 
     // Wait for the embeddedservice_bootstrap script to load before initializing
     window.addEventListener('load', () => {
+        debugLog('Page loaded, checking for embeddedservice_bootstrap...', 'info');
+        console.log('Page loaded, checking for embeddedservice_bootstrap...');
         if (typeof embeddedservice_bootstrap !== 'undefined') {
+            debugLog('✅ embeddedservice_bootstrap found', 'success');
+            console.log('✅ embeddedservice_bootstrap found, initializing...');
             initEmbeddedMessaging();
         } else {
-            console.error('embeddedservice_bootstrap script did not load.');
+            debugLog('❌ embeddedservice_bootstrap script did not load!', 'error');
+            debugLog('Check Salesforce URL and CORS settings', 'error');
+            console.error('❌ embeddedservice_bootstrap script did not load.');
+            console.error('Check if the Salesforce URL is accessible and CORS is configured properly.');
         }
     });
 </script>
-<script type='text/javascript' src='https://petsathome00001--preprod.sandbox.my.site.com/ESWashutoshGithubChannelf1770049934495/assets/js/bootstrap.min.js'></script>
+<script type='text/javascript' src='https://petsathome00001--preprod.sandbox.my.site.com/ESWashutoshGithubChannelf1770049934495/assets/js/bootstrap.min.js' 
+    onerror="debugLog('❌ Failed to load bootstrap.min.js', 'error'); console.error('❌ Failed to load bootstrap.min.js from Salesforce. Check network/CORS settings.');"></script>
 </body>
 </html>
