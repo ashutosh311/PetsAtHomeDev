@@ -16,7 +16,7 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            width: 410px;
+            width: 400px;
             max-height: 300px;
             overflow-y: auto;
             background: rgba(0, 0, 0, 0.9);
@@ -200,12 +200,10 @@
             debugLog('✅ Init called successfully', 'success');
             debugLog('Waiting for widget to be ready...', 'info');
             
-            // Wait for the widget to be ready, then set context
-            // Poll for utilAPI availability (it becomes available when ready)
-            const setContextWhenReady = setInterval(() => {
+            // Wait for the widget to be fully ready before setting context
+            // Need to wait for the widget to render AND be ready for API calls
+            setTimeout(() => {
                 if (embeddedservice_bootstrap.utilAPI && embeddedservice_bootstrap.utilAPI.setSessionContext) {
-                    clearInterval(setContextWhenReady);
-                    
                     debugLog('Widget ready, setting session context...', 'info');
                     embeddedservice_bootstrap.utilAPI.setSessionContext([
                         {
@@ -227,37 +225,18 @@
                         debugLog('❌ Error setting context: ' + error.message, 'error');
                         console.error('❌ Error setting context:', error);
                     });
+                } else {
+                    debugLog('⚠️ utilAPI still not available after 3 seconds', 'error');
                 }
-            }, 500); // Check every 500ms
+            }, 3000); // Wait 3 seconds for widget to be fully ready
             
-            // Timeout after 10 seconds
-            setTimeout(() => {
-                clearInterval(setContextWhenReady);
-            }, 10000);
-            
-            embeddedservice_bootstrap.init(
-                '00D3M0000000bcP',
-                'AnuragGitHubMessingChannel',
-                'https://petsathome00001--preprod.sandbox.my.site.com/ESWashutoshGithubChannelf1770049934495',
-                {
-                    scrt2URL: 'https://petsathome00001--preprod.sandbox.my.salesforce-scrt.com'
-                }
-            );
-            debugLog('✅ Init called successfully', 'success');
-            debugLog('Waiting for widget to render...', 'info');
-            
-            // Check if widget appears after a delay
+            // Check if widget appears in DOM
             setTimeout(() => {
                 const widget = document.querySelector('.embeddedMessagingFrame, .embeddedMessagingConversationButton, [class*="embedded"], iframe[title*="chat"], iframe[title*="messaging"]');
                 if (widget) {
                     debugLog('✅ Widget found in DOM!', 'success');
                 } else {
                     debugLog('⚠️ Widget not found after 5 seconds', 'error');
-                    debugLog('Possible issues:', 'info');
-                    debugLog('1. Channel "AnuragGitHubMessingChannel" not active', 'info');
-                    debugLog('2. Deployment ID incorrect', 'info');
-                    debugLog('3. Org ID "00D3M0000000bcP" mismatch', 'info');
-                    debugLog('4. Check Salesforce deployment settings', 'info');
                 }
             }, 5000);
             console.log('✅ Init called successfully');
