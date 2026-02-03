@@ -137,7 +137,7 @@
                 return;
             }
 
-            embeddedservice_bootstrap.settings.language = 'en_UK';
+            embeddedservice_bootstrap.settings.language = 'en_US';
             
             console.log('Starting Embedded Service initialization...');
             console.log('Auth token:', authToken);
@@ -154,7 +154,6 @@
             console.log('✅ Init called successfully');
             
             // Wait for the widget to be fully ready before setting context
-            // Need to wait for the widget to render AND be ready for API calls
             setTimeout(() => {
                 if (embeddedservice_bootstrap.utilAPI && embeddedservice_bootstrap.utilAPI.setSessionContext) {
                     console.log('Setting session context with auth token...');
@@ -176,10 +175,8 @@
                     .catch((error) => {
                         console.error('❌ Error setting context:', error);
                     });
-                } else {
-                    console.warn('⚠️ utilAPI not available after timeout');
                 }
-            }, 2000);
+            }, 3000);
             
         } catch (err) {
             console.error('Error loading Embedded Messaging:', err);
