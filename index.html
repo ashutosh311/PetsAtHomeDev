@@ -163,8 +163,10 @@
                             value: {
                                 valueType: "StructuredValue",
                                 value: {
-                                    B2CAuthorizationToken: authToken,
-                                    currentPage: window.location.href
+                                    currentPage: window.location.href,
+                                    search: {
+                                        result: "B2CAuthorizationToken" + authToken
+                                    }
                                 }
                             }
                         }
