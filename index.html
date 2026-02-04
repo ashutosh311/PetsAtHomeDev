@@ -159,11 +159,11 @@
                     console.log('Setting session context with auth token...');
                     embeddedservice_bootstrap.utilAPI.setSessionContext([
                         {
-                            name: "_B2CAuthorizationToken",
+                            name: "_AgentContext",
                             value: {
                                 valueType: "StructuredValue",
-                                value: {
-                                    value: authToken
+                                search: {
+                                    B2CAuthorizationToken: authToken
                                 }
                             }
                         }
